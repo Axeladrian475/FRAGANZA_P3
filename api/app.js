@@ -17,15 +17,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// --- CONFIGURACIÓN: Hacer pública la carpeta 'uploads' local ---
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-// -------------------------------------------------------------
+// --- SOLUCIÓN DEFINITIVA: Servir la carpeta 'uploads' local en la url '/images' ---
+app.use('/images', express.static(path.join(__dirname, 'uploads')));
+// -------------------------------------------------------------------------------
 
 app.use('/api', catalogoRoutes);
 app.use('/api/orders', pedidosRoutes);
 app.use('/api/auth', authRoutes);
 
 const PORT = process.env.PORT || 4000;
+
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

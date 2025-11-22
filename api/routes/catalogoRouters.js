@@ -10,18 +10,20 @@ import {
 
 const router = express.Router();
 
-// --- MULTER: Guardar en carpeta 'uploads' local ---
+// --- CONFIGURACIÓN DE MULTER ---
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    // Guardamos en la carpeta 'uploads' dentro de 'api'
     cb(null, 'uploads/'); 
   },
   filename: (req, file, cb) => {
+    // Nombre único para evitar duplicados
     cb(null, Date.now() + path.extname(file.originalname));
   }
 });
 
 const upload = multer({ storage: storage });
-// --------------------------------------------------
+// ------------------------------
 
 router.get("/productos", obtenerProductos);
 router.post("/productos", upload.single('imagen'), agregarProducto);
