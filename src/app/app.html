@@ -1,0 +1,36 @@
+<header class="main-header">
+  <nav class="main-nav">
+    <div class="nav-left">
+      <a routerLink="/catalogo" class="nav-logo">
+        <h1>Fraganza 🌺</h1>
+      </a>
+    </div>
+
+    <div class="nav-right">
+      <a routerLink="/catalogo" class="nav-link">Catálogo</a>
+
+      <ng-container *ngIf="!authService.isLoggedIn()">
+        <a routerLink="/login" class="nav-link">Iniciar Sesión</a>
+        <a routerLink="/registro" class="nav-link highlight">Registrarse</a>
+      </ng-container>
+
+      <ng-container *ngIf="authService.isLoggedIn()">
+        <a *ngIf="authService.isAdmin()" routerLink="/admin" class="nav-link admin-btn">⚙️ Admin</a>
+        
+        <span class="user-welcome">Hola, {{ authService.getUsuario()?.nombre }}</span>
+        <button (click)="logout()" class="btn-logout">Salir</button>
+      </ng-container>
+
+      <a routerLink="/carrito" class="nav-carrito">
+        <span>🛒</span>
+        <span class="carrito-contador" *ngIf="cantidadEnCarrito() > 0">
+          {{ cantidadEnCarrito() }}
+        </span>
+      </a>
+    </div>
+  </nav>
+</header>
+
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>

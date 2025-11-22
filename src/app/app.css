@@ -1,0 +1,126 @@
+/* === ESTILOS DEL HEADER PRINCIPAL === */
+
+.main-header {
+  background-color: var(--color-superficie);
+  box-shadow: var(--sombra);
+  padding: 0 5%;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+}
+
+.main-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 70px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.nav-logo h1 {
+  font-size: 1.8rem;
+  color: var(--color-primario);
+  font-weight: 700;
+}
+
+.nav-logo h1:hover {
+  opacity: 0.8;
+}
+
+.nav-carrito {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 10px 15px;
+  border-radius: var(--radio-borde);
+  transition: background-color 0.3s ease;
+}
+
+.nav-carrito:hover {
+  background-color: #f0eaf6; /* Un lila muy claro */
+}
+
+.nav-carrito span {
+  font-size: 1.2rem;
+}
+
+.carrito-contador {
+  background-color: var(--color-peligro);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.main-content {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 5%;
+}
+
+/* Asegura que el nav use flexbox para separar izquierda y derecha */
+.main-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Espacio entre elementos del menú */
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+}
+
+.nav-link.highlight {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.btn-logout {
+  background: none;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-logout:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+.user-welcome {
+  font-size: 0.9em;
+  color: #666;
+}
+.admin-btn {
+  color: #d63384; /* Un color rosado/morado */
+  font-weight: bold;
+  border: 1px solid #d63384;
+  padding: 5px 10px;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+.admin-btn:hover {
+  background-color: #d63384;
+  color: white;
+}

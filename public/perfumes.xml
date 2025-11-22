@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<perfumes>
+  <perfume>
+    <id>0</id>
+    <nombre>Mandaryn sky</nombre>
+    <precio>690</precio>
+    <descripcion>Mandarina acaramelada en las notas principales</descripcion>
+    <imagen>images/mandaryn_sky.jpg</imagen>
+  </perfume>
+  <perfume>
+    <id>1</id>
+    <nombre>Homme</nombre>
+    <precio>720</precio>
+    <descripcion>Notas orientales con vainilla, ámbar y especias</descripcion>
+    <imagen>images/homme.jpg</imagen>
+  </perfume>
+  <perfume>
+    <id>2</id>
+    <nombre>Mega Man</nombre>
+    <precio>680</precio>
+    <descripcion>Cítricos frescos con jengibre, menta y maderas</descripcion>
+    <imagen>images/mega.png</imagen>
+  </perfume>
+  <perfume>
+    <id>3</id>
+    <nombre>Homme White Edition</nombre>
+    <precio>710</precio>
+    <descripcion>Frescura marina con pimienta rosa, yuzu y ámbar</descripcion>
+    <imagen>images/homme_white.jpg</imagen>
+  </perfume>
+  <perfume>
+    <id>4</id>
+    <nombre>Tyrant</nombre>
+    <precio>750</precio>
+    <descripcion>Toronja cítrica intensa con lavanda y notas amaderadas</descripcion>
+    <imagen>images/tyrant.jpg</imagen>
+  </perfume>
+</perfumes>

@@ -1,0 +1,21 @@
+<div class="restablecer-container">
+  <h2>Crear Nueva Contraseña</h2>
+
+  <div *ngIf="mensaje" class="alerta exito">
+    ✅ {{ mensaje }} <br> Redirigiendo al login...
+  </div>
+
+  <div *ngIf="error" class="alerta error">
+    ❌ {{ error }}
+    <p><a routerLink="/recuperar">Solicitar nuevo enlace</a></p>
+  </div>
+
+  <form (ngSubmit)="cambiarPassword()" *ngIf="!mensaje && !error">
+    <div class="form-group">
+      <label>Nueva Contraseña</label>
+      <input type="password" [(ngModel)]="password" name="password" required placeholder="********" minlength="6">
+    </div>
+    
+    <button type="submit" [disabled]="!password">Cambiar Contraseña</button>
+  </form>
+</div>

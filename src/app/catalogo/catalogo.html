@@ -1,0 +1,41 @@
+<div class="catalogo-container">
+  <h1>Catálogo de Perfumes</h1>
+  
+  <div *ngIf="error" class="error">
+    Error: {{ error }}
+  </div>
+  
+  <div *ngIf="!(productos$ | async) && !error" class="loading">
+    Cargando productos...
+  </div>
+  
+  <div class="productos-grid" *ngIf="productos$ | async as productos">
+    <div *ngFor="let product of productos; let i = index" class="producto-card">
+      <div class="producto-imagen">
+        <img [src]="product.imagen" 
+             [alt]="product.nombre" 
+             (error)="onImageError($event)"
+             [loading]="i === 0 ? 'eager' : 'lazy'">
+      </div>
+      <div class="producto-info">
+        <h3 class="producto-nombre">{{ product.nombre }}</h3>
+        <p class="producto-stock" [class.agotado]="product.stock === 0">
+          @if (product.stock > 0) {
+            Disponibles: {{ product.stock }}
+          } @else {
+            Agotado
+          }
+        </p>
+        <p class="producto-precio">{{ product.precio | currency:'MXN' }}</p>
+        <p class="producto-descripcion">{{ product.descripcion }}</p>
+        
+        <button 
+          class="btn-agregar-carrito" 
+          (click)="agregarAlCarrito(product)"
+          [disabled]="product.stock === 0">
+          🛒 Agregar al Carrito
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,68 @@
+<div class="carrito-header">
+  <h2>Carrito de Compras</h2>
+  <a routerLink="/catalogo" class="btn-volver">
+    <i class="fa-solid fa-arrow-left"></i> Seguir comprando
+  </a>
+</div>
+
+<div class="carrito-container">
+
+  <div class="productos-lista">
+    @if (productosConCantidad().length === 0) {
+      <div class="carrito-vacio">
+        <h3>Tu carrito está vacío</h3>
+        <p>¡Añade algunos perfumes del catálogo para empezar!</p>
+      </div>
+    } @else {
+      @for (item of productosConCantidad(); track item.producto.id) {
+        <div class="producto-item">
+          
+          <div class="producto-item-imagen-contenedor">
+            <img [src]="item.producto.imagen" alt="{{ item.producto.nombre }}">
+          </div>
+
+          <div class="producto-item-info">
+            <h4>{{ item.producto.nombre }}</h4>
+            <p class="descripcion">{{ item.producto.descripcion }}</p>
+            <p class="precio-cantidad-info">
+              {{ item.cantidad }} x <span>{{ item.producto.precio | currency }}</span>
+            </p>
+          </div>
+
+          <button (click)="quitar(item.producto.id)" class="btn-quitar" title="Quitar producto">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      }
+    }
+  </div>
+
+  @if (productosConCantidad().length > 0) {
+    <div class="carrito-resumen">
+      <h3 class="resumen-titulo">Resumen del Pedido</h3>
+
+      <div class="resumen-linea">
+        <span>Subtotal:</span>
+        <span>{{ subtotal() | currency }}</span>
+      </div>
+      
+      <div class="resumen-linea">
+        <span>IVA (16%):</span>
+        <span>{{ iva() | currency }}</span>
+      </div>
+      
+      <div class="resumen-linea resumen-total">
+        <strong>Total:</strong>
+        <strong class="valor">{{ total() | currency }}</strong>
+      </div>
+
+      <div class="resumen-acciones">
+        <ngx-paypal [config]="payPalConfig"></ngx-paypal>
+
+        <button (click)="vaciar()" class="btn-accion btn-vaciar">
+          <i class="fa-solid fa-eraser"></i> Vaciar Carrito
+        </button>
+      </div>
+    </div>
+  }
+</div>

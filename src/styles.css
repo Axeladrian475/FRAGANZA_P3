@@ -1,0 +1,45 @@
+/* === ESTILOS GLOBALES === */
+
+/* 1. Definición de la paleta de colores y variables */
+:root {
+  --color-primario: #8e44ad; /* Morado principal */
+  --color-secundario: #9b59b6; /* Morado más claro */
+  --color-acento: #2ecc71; /* Verde para acciones positivas */
+  --color-acento-hover: #27ae60;
+  --color-peligro: #e74c3c; /* Rojo para acciones negativas */
+  --color-peligro-hover: #c0392b;
+  --color-texto: #34495e; /* Texto principal (gris oscuro) */
+  --color-texto-claro: #7f8c8d;
+  --color-fondo: #f4f6f8; /* Fondo general de la app */
+  --color-superficie: #ffffff; /* Color para las tarjetas y fondos blancos */
+  --sombra: 0 4px 15px rgba(0, 0, 0, 0.08);
+  --radio-borde: 12px;
+}
+
+/* 2. Reseteo y configuración base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 600;
+}
+
+a {
+  text-decoration: none;
+  color: var(--color-primario);
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--color-secundario);
+}

@@ -1,0 +1,27 @@
+<div class="recuperar-container">
+  <h2>Recuperar Contraseña</h2>
+  <p>Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.</p>
+
+  <div *ngIf="mensaje" class="alerta exito">
+    ✅ {{ mensaje }}
+  </div>
+
+  <div *ngIf="error" class="alerta error">
+    ❌ {{ error }}
+  </div>
+
+  <form (ngSubmit)="enviar()" *ngIf="!mensaje">
+    <div class="form-group">
+      <label>Correo Electrónico</label>
+      <input type="email" [(ngModel)]="email" name="email" required placeholder="ejemplo@correo.com">
+    </div>
+    
+    <button type="submit" [disabled]="!email || enviando">
+      {{ enviando ? 'Enviando...' : 'Enviar Enlace' }}
+    </button>
+  </form>
+
+  <div class="links">
+    <a routerLink="/login">Volver a Iniciar Sesión</a>
+  </div>
+</div>
