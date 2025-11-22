@@ -1,36 +1,15 @@
 <div class="admin-container">
   <h2>Panel de Administración 🛠️</h2>
-  
   <div class="admin-layout">
     
     <div class="admin-form card">
       <h3>{{ modoEdicion ? 'Editar Producto' : 'Agregar Nuevo Producto' }}</h3>
-      
       <form (ngSubmit)="guardar()">
-        <div class="form-group">
-          <label>Nombre:</label>
-          <input [(ngModel)]="productoActual.nombre" name="nombre" required>
-        </div>
-        
-        <div class="form-group">
-          <label>Marca:</label>
-          <input [(ngModel)]="productoActual.marca" name="marca" required>
-        </div>
-
-        <div class="form-group">
-          <label>Precio ($):</label>
-          <input type="number" [(ngModel)]="productoActual.precio" name="precio" required>
-        </div>
-
-        <div class="form-group">
-          <label>Stock:</label>
-          <input type="number" [(ngModel)]="productoActual.stock" name="stock" required>
-        </div>
-
-        <div class="form-group">
-          <label>Descripción:</label>
-          <textarea [(ngModel)]="productoActual.descripcion" name="descripcion" rows="3"></textarea>
-        </div>
+        <div class="form-group"><label>Nombre:</label><input [(ngModel)]="productoActual.nombre" name="nombre" required></div>
+        <div class="form-group"><label>Marca:</label><input [(ngModel)]="productoActual.marca" name="marca" required></div>
+        <div class="form-group"><label>Precio ($):</label><input type="number" [(ngModel)]="productoActual.precio" name="precio" required></div>
+        <div class="form-group"><label>Stock:</label><input type="number" [(ngModel)]="productoActual.stock" name="stock" required></div>
+        <div class="form-group"><label>Descripción:</label><textarea [(ngModel)]="productoActual.descripcion" name="descripcion" rows="3"></textarea></div>
 
         <div class="form-group">
           <label>Imagen:</label>
@@ -39,16 +18,12 @@
         
         <div *ngIf="productoActual.imagen && !archivoSeleccionado">
           <small>Imagen actual:</small>
-          <img [src]="productoActual.imagen" class="preview-img">
+          <img [src]="'http://localhost:4000' + productoActual.imagen" class="preview-img">
         </div>
 
         <div class="btn-group">
-          <button type="submit" class="btn-save">
-            {{ modoEdicion ? 'Actualizar' : 'Guardar' }}
-          </button>
-          <button type="button" (click)="cancelar()" class="btn-cancel" *ngIf="modoEdicion">
-            Cancelar
-          </button>
+          <button type="submit" class="btn-save">{{ modoEdicion ? 'Actualizar' : 'Guardar' }}</button>
+          <button type="button" (click)="cancelar()" class="btn-cancel" *ngIf="modoEdicion">Cancelar</button>
         </div>
       </form>
     </div>
@@ -56,22 +31,11 @@
     <div class="admin-list card">
       <h3>Inventario Actual</h3>
       <table>
-        <thead>
-          <tr>
-            <th>Img</th>
-            <th>Nombre</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Img</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr></thead>
         <tbody>
           <tr *ngFor="let p of listaProductos">
-            <td><img [src]="p.imagen" class="thumb"></td>
-            <td>
-              <strong>{{ p.nombre }}</strong><br>
-              <small>{{ p.marca }}</small>
-            </td>
+            <td><img [src]="'http://localhost:4000' + p.imagen" class="thumb"></td>
+            <td><strong>{{ p.nombre }}</strong><br><small>{{ p.marca }}</small></td>
             <td>{{ p.precio | currency:'MXN' }}</td>
             <td [class.low-stock]="p.stock < 5">{{ p.stock }}</td>
             <td>
