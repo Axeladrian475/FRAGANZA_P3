@@ -18,7 +18,8 @@
         <div class="producto-item">
           
           <div class="producto-item-imagen-contenedor">
-            <img [src]="item.producto.imagen" alt="{{ item.producto.nombre }}">
+            <img [src]="'http://localhost:4000/' + item.producto.imagen" 
+                 alt="{{ item.producto.nombre }}">
           </div>
 
           <div class="producto-item-info">

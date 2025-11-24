@@ -19,6 +19,11 @@
       </div>
       <div class="producto-info">
         <h3 class="producto-nombre">{{ product.nombre }}</h3>
+        
+        <p class="producto-marca" style="color: #666; font-style: italic; margin: 0 0 10px 0;">
+          {{ product.marca }}
+        </p>
+        
         <p class="producto-stock" [class.agotado]="product.stock === 0">
           @if (product.stock > 0) {
             Disponibles: {{ product.stock }}
