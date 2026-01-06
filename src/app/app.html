@@ -24,6 +24,10 @@
           <span class="link-text">Mi Perfil</span>
         </a>
 
+        <li *ngIf="authService.isLoggedIn()">
+          <a routerLink="/historial">Mis Pedidos</a>
+        </li>
+
       </ng-container>
 
       <a routerLink="/carrito" class="nav-carrito">

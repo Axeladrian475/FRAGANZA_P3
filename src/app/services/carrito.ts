@@ -140,4 +140,14 @@ export class CarritoService {
     a.click();
     URL.revokeObjectURL(url);
   }
+
+  
+// ... código anterior ...
+
+  // NUEVO: Obtener historial de compras
+  obtenerHistorial(usuarioId: number) {
+    // Llamamos a la ruta que acabamos de crear en el backend
+    return this.http.get<any[]>(`${this.apiUrl}/usuario/${usuarioId}`);
+  }
 }
+

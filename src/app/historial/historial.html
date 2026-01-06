@@ -1,0 +1,37 @@
+<div class="historial-container">
+  <h2>Mis Compras</h2>
+
+  <div *ngIf="loading" class="loading">Cargando historial...</div>
+
+  <div *ngIf="!loading && pedidos().length === 0" class="empty-state">
+    <p>Aún no has realizado ninguna compra.</p>
+    <a routerLink="/catalogo" class="btn-comprar">Ir al Catálogo</a>
+  </div>
+
+  <div class="lista-pedidos">
+    <div *ngFor="let pedido of pedidos()" class="pedido-card">
+      
+      <div class="pedido-header">
+        <div class="info">
+          <span class="fecha"> {{ pedido.fecha | date:'medium' }}</span>
+          <span class="id-pedido">Pedido #{{ pedido.id }}</span>
+        </div>
+        <div class="total-badge">
+          {{ pedido.total | currency:'MXN' }}
+        </div>
+      </div>
+
+      <div class="pedido-body">
+        <h4>Productos:</h4>
+        <ul>
+          <li *ngFor="let prod of pedido.productos">
+            <span class="cant">{{ prod.cantidad }}x</span> 
+            <span class="nombre">{{ prod.nombre }}</span>
+            <span class="precio">{{ prod.precio | currency:'MXN' }}</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>

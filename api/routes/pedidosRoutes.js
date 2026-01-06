@@ -1,16 +1,17 @@
 import express from 'express';
-// Importamos la lógica de base de datos y de PayPal
-import { crearPedido } from '../controllers/pedidosController.js'; 
+// Agregamos 'obtenerHistorial' a la importación
+import { crearPedido, obtenerHistorial } from '../controllers/pedidosController.js'; 
 import { CrearOrden, CapturarOrden } from '../controllers/bdController.js';
 
 const router = express.Router();
 
-// 1. Ruta para GUARDAR el pedido en BD y actualizar Stock
-// Se accede como: POST http://localhost:4000/api/orders/
+// Rutas existentes
 router.post('/', crearPedido);
-
-// 2. Rutas de PayPal
 router.post('/create-order', CrearOrden);
 router.post('/capture-order', CapturarOrden);
+
+// --- NUEVA RUTA ---
+// GET /api/orders/usuario/:usuario_id
+router.get('/usuario/:usuario_id', obtenerHistorial);
 
 export default router;

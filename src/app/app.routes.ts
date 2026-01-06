@@ -9,6 +9,7 @@ import { authGuard } from './guards/auth.guard';
 import { AdminComponent } from './admin/admin'; // Importar
 import { adminGuard } from './guards/auth.guard'; // Importar guard
 import { PerfilComponent } from './perfil/perfil';
+import { HistorialComponent } from './historial/historial'; // Importar
 
 export const routes: Routes = [
   { path: 'catalogo', component: CatalogoComponent },
@@ -42,6 +43,17 @@ export const routes: Routes = [
     canActivate: [authGuard] // Protegido: Solo usuarios logueados
   },
 
-  { path: '**', redirectTo: 'catalogo' }
+
+  { path: 'catalogo', loadComponent: () => import('./catalogo/catalogo').then(m => m.CatalogoComponent) },
+    // ...
+    
+    // AGREGAR ESTA:
+    { 
+        path: 'historial', 
+        component: HistorialComponent,
+        canActivate: [authGuard] // Protegemos para que solo usuarios logueados entren
+    },
+      { path: '**', redirectTo: 'catalogo' }
+
 
 ];
