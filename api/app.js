@@ -17,9 +17,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// --- SOLUCIÓN DEFINITIVA: Servir la carpeta 'uploads' local en la url '/images' ---
 app.use('/images', express.static(path.join(__dirname, 'uploads')));
-// -------------------------------------------------------------------------------
 
 app.use('/api', catalogoRoutes);
 app.use('/api/orders', pedidosRoutes);

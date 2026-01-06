@@ -40,16 +40,35 @@ export class AdminComponent implements OnInit {
   nuevoProducto() {
     this.modoEdicion = false;
     this.productoActual = this.iniciarProductoVacio();
+    this.archivoSeleccionado = null; // Limpiamos la selección de archivo
   }
 
   editarProducto(producto: Producto) {
     this.modoEdicion = true;
-
     this.productoActual = { ...producto };
+    this.archivoSeleccionado = null; // Resetear archivo al editar
   }
 
-
   guardar() {
+    // --- VALIDACIÓN FRONTEND ---
+    if (
+      !this.productoActual.nombre?.trim() || 
+      !this.productoActual.marca?.trim() || 
+      !this.productoActual.descripcion?.trim() ||
+      this.productoActual.precio <= 0 || 
+      this.productoActual.stock < 0
+    ) {
+      alert('Por favor, llena todos los campos correctamente. El precio debe ser mayor a 0.');
+      return;
+    }
+
+    // Si es NUEVO y no hay imagen seleccionada, error.
+    if (!this.modoEdicion && !this.archivoSeleccionado) {
+      alert('Es obligatorio seleccionar una imagen para crear un producto.');
+      return;
+    }
+    // ---------------------------
+
     const formData = new FormData();
     formData.append('nombre', this.productoActual.nombre);
     formData.append('marca', this.productoActual.marca);
@@ -60,6 +79,7 @@ export class AdminComponent implements OnInit {
     if (this.archivoSeleccionado) {
       formData.append('imagen', this.archivoSeleccionado);
     } else {
+      // En edición, si no seleccionó nueva imagen, mantenemos la ruta anterior si existe
       if (this.productoActual.imagen) {
         formData.append('imagen', this.productoActual.imagen);
       }
@@ -71,7 +91,6 @@ export class AdminComponent implements OnInit {
           alert('Actualizado con éxito');
           this.cargarProductos();
           this.nuevoProducto();
-          this.archivoSeleccionado = null; 
         },
         error: () => alert('Error al actualizar')
       });
@@ -81,12 +100,16 @@ export class AdminComponent implements OnInit {
           alert('Creado con éxito');
           this.cargarProductos();
           this.nuevoProducto();
-          this.archivoSeleccionado = null;
         },
-        error: () => alert('Error al crear')
+        error: (err) => {
+          console.error(err);
+          // Muestra el mensaje de error que enviamos desde el backend (status 400)
+          alert(err.error?.error || 'Error al crear');
+        }
       });
     }
   }
+
   eliminar(id: number) {
     if (confirm('¿Estás seguro de eliminar este producto?')) {
       this.productosService.eliminarProducto(id).subscribe({

@@ -6,40 +6,53 @@ import { enviarCorreo } from '../config/mailer.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secreto';
 
-// ------------------------------------------------------------------
 // 1. REGISTRO DE USUARIO
-// ------------------------------------------------------------------
 export const registrarUsuario = async (req, res) => {
-  const { nombre, email, password } = req.body;
+    // 1. Recibir todos los datos solicitados
+    const { nombre, apellido, username, email, password } = req.body;
 
-  try {
-    // Verificar si existe
-    const [existingUser] = await db.execute('SELECT * FROM usuarios WHERE email = ?', [email]);
-    if (existingUser.length > 0) {
-      return res.status(400).json({ message: 'El correo electrónico ya está registrado.' });
+    // VALIDACIÓN 1: Que no falte ningún dato
+    if (!nombre || !apellido || !username || !email || !password) {
+        return res.status(400).json({ message: "Todos los campos (Nombre, Apellido, Usuario, Email, Contraseña) son obligatorios." });
     }
 
-    // Encriptar password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // VALIDACIÓN 2: Formato de correo electrónico correcto
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "El formato del correo electrónico no es válido." });
+    }
 
-    // Guardar en BD
-    await db.execute(
-      'INSERT INTO usuarios (nombre, email, password) VALUES (?, ?, ?)',
-      [nombre, email, hashedPassword]
-    );
+    // VALIDACIÓN 3: Longitud de la contraseña
+    if (password.length < 8) {
+        return res.status(400).json({ message: "La contraseña debe tener al menos 8 caracteres." });
+    }
 
-    res.status(201).json({ message: 'Usuario registrado con éxito.' });
+    try {
+        // VALIDACIÓN 4: Verificar que el correo no esté registrado ya
+        // CORRECCIÓN: Quitamos .promise() porque 'db' ya lo incluye
+        const [users] = await db.query("SELECT email FROM usuarios WHERE email = ?", [email]);
+        
+        if (users.length > 0) {
+            return res.status(409).json({ message: "Este correo electrónico ya está registrado." });
+        }
 
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error en el servidor al registrar usuario.' });
-  }
+        // Si pasa todas las validaciones, encriptamos la contraseña
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Guardamos el nuevo usuario
+        // CORRECCIÓN: Quitamos .promise() aquí también
+        const sql = "INSERT INTO usuarios (nombre, apellido, username, email, password, rol) VALUES (?, ?, ?, ?, ?, 'cliente')";
+        await db.query(sql, [nombre, apellido, username, email, hashedPassword]);
+
+        return res.status(201).json({ message: "Cuenta creada exitosamente." });
+
+    } catch (error) {
+        console.error("Error en registro:", error); // Esto te ayudará a ver el error real en la terminal si vuelve a pasar
+        return res.status(500).json({ message: "Error en el servidor al intentar registrar el usuario." });
+    }
 };
 
-// ------------------------------------------------------------------
 // 2. INICIO DE SESIÓN (LOGIN)
-// ------------------------------------------------------------------
 export const loginUsuario = async (req, res) => {
   const { email, password } = req.body;
 
@@ -79,9 +92,7 @@ export const loginUsuario = async (req, res) => {
   }
 };
 
-// ------------------------------------------------------------------
 // 3. SOLICITAR RECUPERACIÓN
-// ------------------------------------------------------------------
 export const solicitarRecuperacion = async (req, res) => {
   const { email } = req.body;
 
@@ -121,9 +132,7 @@ export const solicitarRecuperacion = async (req, res) => {
   }
 };
 
-// ------------------------------------------------------------------
 // 4. RESTABLECER CONTRASEÑA
-// ------------------------------------------------------------------
 export const restablecerPassword = async (req, res) => {
   const { token, nuevoPassword } = req.body;
 
@@ -152,3 +161,38 @@ export const restablecerPassword = async (req, res) => {
     res.status(500).json({ message: 'Error al cambiar la contraseña.' });
   }
 };
+
+export const actualizarPerfil = async (req, res) => {
+  // Obtenemos el ID del middleware (req.user) y los datos del body
+  const userId = req.user.id; 
+  const { nombre, email } = req.body;
+
+  try {
+    // 1. Verificar si el nuevo email ya existe (y que no sea del mismo usuario)
+    const [existingUser] = await db.execute(
+      'SELECT * FROM usuarios WHERE email = ? AND id != ?', 
+      [email, userId]
+    );
+
+    if (existingUser.length > 0) {
+      return res.status(400).json({ message: 'Ese correo ya está en uso por otro usuario.' });
+    }
+
+    // 2. Actualizar datos
+    await db.execute(
+      'UPDATE usuarios SET nombre = ?, email = ? WHERE id = ?',
+      [nombre, email, userId]
+    );
+
+    // 3. Devolver los datos actualizados para que el frontend se refresque
+    res.json({ 
+      message: 'Perfil actualizado correctamente',
+      usuario: { id: userId, nombre, email, rol: req.user.rol } 
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al actualizar el perfil.' });
+  }
+};
+

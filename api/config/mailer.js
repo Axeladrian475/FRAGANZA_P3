@@ -13,7 +13,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Verificamos la conexión al iniciar
 transporter.verify().then(() => {
   console.log('✅ Listo para enviar correos');
 }).catch(err => {

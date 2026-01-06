@@ -1,4 +1,3 @@
-/* === ESTILOS DEL CATÁLOGO === */
 
 .catalogo-container h1 {
   text-align: center;
@@ -63,7 +62,7 @@
   font-size: 0.9rem;
   color: var(--color-texto-claro);
   margin-bottom: 16px;
-  flex-grow: 1; /* Empuja el precio y botón hacia abajo */
+  flex-grow: 1; 
 }
 
 .producto-precio {

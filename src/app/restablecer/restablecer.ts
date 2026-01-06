@@ -22,7 +22,6 @@ export class RestablecerComponent implements OnInit {
   error = '';
   
   ngOnInit() {
-    // Capturar el token de la URL (ej: /restablecer/TOKEN_GIGANTE)
     this.token = this.route.snapshot.paramMap.get('token') || '';
   }
 
@@ -32,7 +31,7 @@ export class RestablecerComponent implements OnInit {
     this.authService.restablecerPassword(this.token, this.password).subscribe({
       next: (res: any) => {
         this.mensaje = '¡Contraseña actualizada correctamente!';
-        setTimeout(() => this.router.navigate(['/login']), 3000); // Redirigir a login en 3s
+        setTimeout(() => this.router.navigate(['/login']), 3000); 
       },
       error: (err) => {
         this.error = err.error?.message || 'El enlace es inválido o ha expirado.';

@@ -84,4 +84,28 @@ export class AuthService {
         return this.http.post(`${this.apiUrl}/restablecer`, { token, nuevoPassword });
     }
 
+    
+
+    // NUEVO: Actualizar datos en el backend
+    actualizarPerfil(datos: { nombre: string, email: string }): Observable<any> {
+        // Obtenemos el token actual para enviarlo en los headers (Angular lo suele hacer con interceptor, 
+        // pero si no tienes uno, lo agregamos manual o asumimos que tienes un interceptor)
+        const token = this.getToken();
+        const headers = { 'Authorization': `Bearer ${token}` };
+        
+        return this.http.put(`${this.apiUrl}/perfil`, datos, { headers }).pipe(
+            tap((response: any) => {
+                if (response.usuario) {
+                    this.actualizarUsuarioLocal(response.usuario);
+                }
+            })
+        );
+    }
+
+    // NUEVO: Actualizar localStorage y Signal
+    private actualizarUsuarioLocal(usuario: any) {
+        localStorage.setItem(this.userKey, JSON.stringify(usuario));
+        // Opcional: Si tuvieras un signal con los datos del usuario, lo actualizas aquí.
+    }
+
 }

@@ -4,8 +4,10 @@ import {
   registrarUsuario, 
   loginUsuario, 
   solicitarRecuperacion, 
-  restablecerPassword 
+  restablecerPassword,
+  actualizarPerfil // <--- IMPORTAR ESTO
 } from '../controllers/authController.js';
+import { verifyToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -16,4 +18,5 @@ router.post('/login', loginUsuario);
 router.post('/recuperar', solicitarRecuperacion);
 router.post('/restablecer', restablecerPassword);
 
+router.put('/perfil', verifyToken, actualizarPerfil);
 export default router;

@@ -6,7 +6,7 @@ import { AuthService } from './services/auth.service'; // 1. Importar AuthServic
 
 @Component({
   selector: 'app-root',
-  // 3. Añade RouterLink y CommonModule a los imports
+  //Añade RouterLink y CommonModule a los imports
   imports: [RouterOutlet, RouterLink, CommonModule], 
   templateUrl: './app.html',
   styleUrls: ['./app.css']
@@ -15,12 +15,12 @@ export class App {
   
   private carritoService = inject(CarritoService);
   
-  // 2. Inyectar AuthService y hacerlo público para el HTML
+  //Inyectar AuthService y hacerlo público para el HTML
   public authService = inject(AuthService); 
 
   cantidadEnCarrito = computed(() => this.carritoService.productos().length);
 
-  // 3. Método para cerrar sesión desde el menú
+  //Método para cerrar sesión desde el menú
   logout() {
     this.authService.logout();
   }

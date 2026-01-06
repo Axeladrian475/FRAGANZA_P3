@@ -8,6 +8,7 @@ import { RestablecerComponent } from './restablecer/restablecer'; // NUEVO
 import { authGuard } from './guards/auth.guard';
 import { AdminComponent } from './admin/admin'; // Importar
 import { adminGuard } from './guards/auth.guard'; // Importar guard
+import { PerfilComponent } from './perfil/perfil';
 
 export const routes: Routes = [
   { path: 'catalogo', component: CatalogoComponent },
@@ -33,6 +34,12 @@ export const routes: Routes = [
     path: 'admin',
     component: AdminComponent,
     canActivate: [adminGuard] // <--- SOLO ADMINS PUEDEN ENTRAR
+  },
+
+  { 
+    path: 'perfil', 
+    component: PerfilComponent, 
+    canActivate: [authGuard] // Protegido: Solo usuarios logueados
   },
 
   { path: '**', redirectTo: 'catalogo' }

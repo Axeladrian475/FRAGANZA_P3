@@ -1,4 +1,4 @@
-/* === ESTILOS DE LA PÁGINA DEL CARRITO === */
+
 
 .carrito-header {
   display: flex;
@@ -54,7 +54,6 @@
   align-items: center;
 }
 
-/* === SOLUCIÓN 1: Controlar el tamaño de las imágenes === */
 .producto-item-imagen-contenedor {
   width: 100px;
   height: 100px;
@@ -108,7 +107,6 @@
   color: var(--color-peligro-hover);
 }
 
-/* === SOLUCIÓN 2 y 3: Centrar resumen y botones === */
 .carrito-resumen {
   background: var(--color-superficie);
   padding: 30px;

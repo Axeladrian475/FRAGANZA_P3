@@ -38,7 +38,7 @@ export class CarritoComponent implements OnInit {
         const body = {
           productos: this.productosConCantidad()
         };
-        // Nota: El backend recalculará el total con IVA por seguridad
+
         return this.http.post<{ id: string }>('http://localhost:4000/api/orders/create-order', body)
           .toPromise()
           .then(order => {
@@ -59,7 +59,6 @@ export class CarritoComponent implements OnInit {
           next: (details: any) => {
             alert('¡Pago completado con éxito! Gracias por tu compra. Se descargará tu recibo.');
 
-            // Obtenemos los datos ANTES de vaciar el carrito
             const productosParaRecibo = this.productosConCantidad();
             const subtotalRecibo = this.subtotal();
             const ivaRecibo = this.iva();

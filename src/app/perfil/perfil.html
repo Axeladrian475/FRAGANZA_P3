@@ -1,0 +1,40 @@
+<div class="perfil-container">
+  <h2>Mi Perfil</h2>
+  
+  <div class="card">
+    <form (ngSubmit)="guardarCambios()" #form="ngForm">
+      
+      <div class="form-group">
+        <label for="nombre">Nombre Completo</label>
+        <input 
+          type="text" 
+          id="nombre" 
+          name="nombre" 
+          [(ngModel)]="usuario.nombre" 
+          required
+          class="form-control"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="email">Correo Electrónico</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          [(ngModel)]="usuario.email" 
+          required
+          email
+          class="form-control"
+        >
+      </div>
+
+      <p *ngIf="mensaje" class="success-msg">{{ mensaje }}</p>
+      <p *ngIf="error" class="error-msg">{{ error }}</p>
+
+      <button type="submit" [disabled]="form.invalid" class="btn-guardar">
+        Guardar Cambios
+      </button>
+    </form>
+  </div>
+</div>

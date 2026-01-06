@@ -14,20 +14,31 @@ export const obtenerProductos = async (req, res) => {
 // 2. AGREGAR
 export const agregarProducto = async (req, res) => {
   const { nombre, marca, precio, stock, descripcion } = req.body;
+
+  // --- VALIDACIÓN OBLIGATORIA ---
+  // 1. Verificar que todos los campos de texto tengan valor
+  if (!nombre || !marca || !precio || !stock || !descripcion) {
+    return res.status(400).json({ error: "Todos los campos (nombre, marca, precio, stock, descripción) son obligatorios." });
+  }
+
+  // 2. Verificar que la imagen haya sido subida
+  if (!req.file) {
+    return res.status(400).json({ error: "La imagen es obligatoria para crear un nuevo producto." });
+  }
+  // ------------------------------
   
   // Guardamos la ruta relativa SIN barra inicial: images/archivo.jpg
-  // Esto coincide con la ruta virtual '/images' que creamos en app.js
-  const imagenUrl = req.file ? `images/${req.file.filename}` : null;
+  const imagenUrl = `images/${req.file.filename}`;
 
   try {
     const [result] = await db.execute(
       'INSERT INTO perfumes (nombre, marca, precio, stock, imagen, descripcion) VALUES (?, ?, ?, ?, ?, ?)',
-      [nombre, marca, precio, stock, imagenUrl, descripcion || '']
+      [nombre, marca, precio, stock, imagenUrl, descripcion]
     );
     res.status(201).json({ id: result.insertId, message: 'Producto agregado' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Error al agregar" });
+    res.status(500).json({ error: "Error al agregar en base de datos" });
   }
 };
 
