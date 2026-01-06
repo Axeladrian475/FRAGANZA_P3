@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 @Component({
   selector: 'app-catalogo',
   standalone: true,
-  imports: [NgFor, AsyncPipe, NgIf, CarritoComponent, CurrencyPipe], 
+  imports: [NgFor, AsyncPipe, NgIf, CurrencyPipe], 
   templateUrl: './catalogo.html',
   styleUrls: ['./catalogo.css']
 })

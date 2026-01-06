@@ -1,16 +1,16 @@
 import express from 'express';
-import paypal from '@paypal/checkout-server-sdk';
-import paypalClient from '../config/paypal.js';
-import { db } from '../config/bd.js'; // Importamos la conexión a la BD
-import { CrearOrden } from '../controllers/bdController.js';
-import { CapturarOrden } from '../controllers/bdController.js';
+// Importamos la lógica de base de datos y de PayPal
+import { crearPedido } from '../controllers/pedidosController.js'; 
+import { CrearOrden, CapturarOrden } from '../controllers/bdController.js';
 
 const router = express.Router();
 
-// Ruta para CREAR una orden de pago (con validación de stock)
-router.post('/create-order', CrearOrden);
+// 1. Ruta para GUARDAR el pedido en BD y actualizar Stock
+// Se accede como: POST http://localhost:4000/api/orders/
+router.post('/', crearPedido);
 
-// Ruta para CAPTURAR (finalizar) una orden y ACTUALIZAR STOCK
+// 2. Rutas de PayPal
+router.post('/create-order', CrearOrden);
 router.post('/capture-order', CapturarOrden);
 
 export default router;

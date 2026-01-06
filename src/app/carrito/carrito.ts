@@ -1,24 +1,28 @@
 import { Component, computed, inject, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { CarritoService } from '../services/carrito';
-import { RouterLink } from '@angular/router';
-import { CurrencyPipe } from '@angular/common';
+import { RouterLink, Router } from '@angular/router'; 
+import { CurrencyPipe, CommonModule } from '@angular/common'; 
 import { NgxPayPalModule, IOnApproveCallbackData } from 'ngx-paypal';
+
+import { CarritoService } from '../services/carrito';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-carrito',
   standalone: true,
-  imports: [CurrencyPipe, RouterLink, NgxPayPalModule],
+  imports: [CurrencyPipe, RouterLink, NgxPayPalModule, CommonModule],
   templateUrl: 'carrito.html',
   styleUrls: ['carrito.css']
 })
 export class CarritoComponent implements OnInit {
   private carritoService = inject(CarritoService);
+  private authService = inject(AuthService);
   private http = inject(HttpClient);
+  private router = inject(Router);
 
+  // Signals
   carrito = this.carritoService.productos;
   productosConCantidad = computed(() => this.carritoService.obtenerProductosConCantidad());
-  
   
   subtotal = computed(() => this.carritoService.subtotal());
   iva = computed(() => this.carritoService.iva());
@@ -31,60 +35,79 @@ export class CarritoComponent implements OnInit {
   }
 
   private initConfig(): void {
+    const usuario = this.authService.getUsuario(); 
+
     this.payPalConfig = {
       currency: 'MXN',
       clientId: 'Aa926d9SPXMrJB-1NmJWP6NjQyvTR2IRX-ed39gGa29inrex5dDeV8Evk2VsBYZpMWnu2OxC2uPMdGAu',
+      
       createOrderOnServer: (data: any) => {
-        const body = {
-          productos: this.productosConCantidad()
-        };
-
-        return this.http.post<{ id: string }>('http://localhost:4000/api/orders/create-order', body)
+        if (!usuario || !usuario.id) {
+            alert('Por favor inicia sesión para continuar.');
+            this.router.navigate(['/login']);
+            return Promise.reject('No user');
+        }
+        
+        // Enviamos los productos al backend para que él calcule el total + IVA
+        const body = { productos: this.productosConCantidad() };
+        
+        return this.http.post('http://localhost:4000/api/orders/create-order', body)
           .toPromise()
-          .then(order => {
-            if (order) return order.id;
-            throw new Error("No se pudo obtener el ID de la orden del servidor.");
-          })
-          .catch(err => {
-            alert(`Error al crear la orden: ${err.error}`);
+          .then((order: any) => order.id)
+          .catch((err) => {
+            console.error('Error create-order:', err);
+            alert('Error al iniciar PayPal.');
             throw err;
           });
       },
+
       onApprove: (data: IOnApproveCallbackData, actions: any) => {
-        const body = {
-          orderID: data.orderID,
-          productos: this.productosConCantidad()
-        };
+        const body = { orderID: data.orderID };
+
+        // 1. CAPTURAR EL PAGO EN PAYPAL
         this.http.post('http://localhost:4000/api/orders/capture-order', body).subscribe({
           next: (details: any) => {
-            alert('¡Pago completado con éxito! Gracias por tu compra. Se descargará tu recibo.');
-
-            const productosParaRecibo = this.productosConCantidad();
-            const subtotalRecibo = this.subtotal();
-            const ivaRecibo = this.iva();
-            const totalRecibo = this.total();
+            console.log('Pago PayPal exitoso.');
             
-          
-            this.carritoService.exportarXML(productosParaRecibo, subtotalRecibo, ivaRecibo, totalRecibo, data.orderID);
+            // 2. GUARDAR EN BD Y ACTUALIZAR STOCK
+            // Usamos el ID del usuario logueado
+            const usuarioLogueado = this.authService.getUsuario();
+            if (usuarioLogueado && usuarioLogueado.id) {
+                
+                this.carritoService.guardarPedidoEnBD(usuarioLogueado.id).subscribe({
+                    next: (resBD) => {
+                        console.log('Pedido registrado en BD:', resBD);
+                        
+                        alert('¡Compra exitosa! Se descargará tu recibo.');
 
-            this.carritoService.vaciar();
+                        // 3. GENERAR XML Y VACIAR
+                        this.carritoService.generarReciboXML();
+                        this.carritoService.vaciar();
+                        this.router.navigate(['/catalogo']);
+                    },
+                    error: (errBD) => {
+                        console.error('Error BD:', errBD);
+                        alert('Pago procesado, pero error al guardar historial. Contacta soporte.');
+                    }
+                });
+            }
           },
-          error: (err: any) => {
-            console.error('Error al capturar la orden', err);
-            alert('Hubo un problema al confirmar tu pago. Por favor, contacta a soporte.');
+          error: (err) => {
+            console.error('Error captura:', err);
+            alert('Error al procesar el pago final.');
           }
         });
       },
-      onError: (err: any) => {
-        console.log('OnError', err);
-        alert('PayPal encontró un error. Por favor, intenta de nuevo.');
-      },
-      onCancel: (data: any, actions: any) => {
-        console.log('OnCancel', data, actions);
-      },
+      onError: (err: any) => console.log('PayPal Error:', err),
+      onCancel: (data: any) => console.log('Pago cancelado')
     };
   }
 
-  quitar(id: number) { this.carritoService.quitar(id); }
-  vaciar() { this.carritoService.vaciar(); }
+  quitar(id: number) {
+    this.carritoService.quitar(id);
+  }
+
+  vaciar() {
+    this.carritoService.vaciar();
+  }
 }
