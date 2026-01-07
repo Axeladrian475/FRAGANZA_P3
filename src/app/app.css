@@ -1,126 +1,205 @@
-/* === ESTILOS DEL HEADER PRINCIPAL === */
+/* === VARIABLES LOCALES PARA EL HEADER === */
+:host {
+  --header-bg: rgba(255, 255, 255, 0.85); /* Fondo semitransparente */
+  --header-blur: 12px;
+  --text-color: #1e293b;
+  --primary-color: #000;
+  --accent-color: #2563eb;
+  --danger-color: #ef4444;
+  --shadow-header: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
 
+/* === HEADER PRINCIPAL === */
 .main-header {
-  background-color: var(--color-superficie);
-  box-shadow: var(--sombra);
-  padding: 0 5%;
+  background-color: var(--header-bg);
+  backdrop-filter: blur(var(--header-blur)); /* Efecto vidrio */
+  -webkit-backdrop-filter: blur(var(--header-blur));
   position: sticky;
   top: 0;
   z-index: 1000;
-  width: 100%;
+  box-shadow: var(--shadow-header);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 0.8rem 0;
+  transition: all 0.3s ease;
 }
 
 .main-nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 70px;
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* === LOGO === */
+.nav-logo {
+  text-decoration: none;
+  transition: transform 0.2s;
 }
 
 .nav-logo h1 {
-  font-size: 1.8rem;
-  color: var(--color-primario);
-  font-weight: 700;
+  font-size: 1.6rem;
+  margin: 0;
+  background: linear-gradient(45deg, #000, #444);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  letter-spacing: -0.5px;
 }
 
-.nav-logo h1:hover {
-  opacity: 0.8;
+.nav-logo:hover {
+  transform: scale(1.05);
 }
 
-.nav-carrito {
+/* === NAVEGACIÓN DERECHA === */
+.nav-right {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  padding: 10px 15px;
-  border-radius: var(--radio-borde);
-  transition: background-color 0.3s ease;
+  gap: 20px; /* Espacio entre elementos */
 }
 
-.nav-carrito:hover {
-  background-color: #f0eaf6; /* Un lila muy claro */
+/* Enlaces Generales */
+.nav-link {
+  text-decoration: none;
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+  position: relative;
 }
 
-.nav-carrito span {
-  font-size: 1.2rem;
+.nav-link:not(.btn-primary):not(.btn-secondary):hover {
+  color: var(--accent-color);
 }
 
-.carrito-contador {
-  background-color: var(--color-peligro);
-  color: white;
+/* Botones de Auth (Login/Registro) */
+.btn-secondary {
+  color: var(--text-color);
+  margin-right: 5px;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white !important;
+  padding: 8px 20px;
+  border-radius: 20px;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #333;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* Admin Badge */
+.admin-badge {
+  background-color: #f1f5f9;
+  color: #475569;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  border: 1px solid #e2e8f0;
+}
+
+/* === ÁREA DE USUARIO === */
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 15px;
+  border-left: 1px solid #e2e8f0; /* Separador vertical */
+}
+
+.user-name {
+  text-decoration: none;
+  color: var(--text-color);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.btn-logout {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s;
+  font-size: 0.9rem;
+  padding: 5px;
+}
+
+.btn-logout:hover {
+  color: var(--danger-color);
+}
+
+/* === CARRITO (BADGE MEJORADO) === */
+.nav-carrito {
+  position: relative; /* Clave para posicionar el badge */
+  text-decoration: none;
+  background-color: #f8fafc;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  width: 24px;
-  height: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 0.8rem;
-  font-weight: 600;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s;
+}
+
+.nav-carrito .icon {
+  font-size: 1.2rem;
+}
+
+.nav-carrito:hover {
+  background-color: #fff;
+  border-color: var(--accent-color);
+  transform: rotate(5deg);
+}
+
+.carrito-contador {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background-color: var(--danger-color);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 800;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px; /* Hace un círculo perfecto */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2px;
+  border: 2px solid white; /* Borde blanco para separar del icono */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Responsive básico para móviles */
+@media (max-width: 768px) {
+  .main-nav {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .nav-right {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+  
+  .user-menu {
+    border-left: none;
+    padding-left: 0;
+  }
 }
 
 .main-content {
   max-width: 1200px;
   margin: 2rem auto;
   padding: 0 5%;
-}
-
-/* Asegura que el nav use flexbox para separar izquierda y derecha */
-.main-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 15px; /* Espacio entre elementos del menú */
-}
-
-.nav-link {
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
-}
-
-.nav-link.highlight {
-  color: #28a745;
-  font-weight: bold;
-}
-
-.btn-logout {
-  background: none;
-  border: 1px solid #dc3545;
-  color: #dc3545;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.btn-logout:hover {
-  background-color: #dc3545;
-  color: white;
-}
-
-.user-welcome {
-  font-size: 0.9em;
-  color: #666;
-}
-.admin-btn {
-  color: #d63384; 
-  font-weight: bold;
-  border: 1px solid #d63384;
-  padding: 5px 10px;
-  border-radius: 4px;
-  margin-right: 10px;
-}
-.admin-btn:hover {
-  background-color: #d63384;
-  color: white;
 }

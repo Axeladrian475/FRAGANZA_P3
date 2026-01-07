@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { CarritoService } from '../services/carrito'; // Asegúrate de la ruta correcta
+import { CarritoService } from '../services/carrito'; 
 
 @Component({
   selector: 'app-historial',
@@ -15,7 +15,6 @@ export class HistorialComponent implements OnInit {
   private authService = inject(AuthService);
   private carritoService = inject(CarritoService);
 
-  // Usamos signal o variable normal para guardar los pedidos
   pedidos = signal<any[]>([]);
   loading = true;
 
@@ -23,12 +22,15 @@ export class HistorialComponent implements OnInit {
     const usuario = this.authService.getUsuario();
     
     if (usuario && usuario.id) {
+      // Ahora 'obtenerHistorial' ya existe en el servicio
       this.carritoService.obtenerHistorial(usuario.id).subscribe({
-        next: (data) => {
+        // Agregamos el tipo ': any' para corregir el error TS7006
+        next: (data: any) => {
           this.pedidos.set(data);
           this.loading = false;
         },
-        error: (err) => {
+        // Agregamos el tipo ': any' aquí también
+        error: (err: any) => {
           console.error(err);
           this.loading = false;
         }

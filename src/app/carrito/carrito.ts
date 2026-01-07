@@ -34,6 +34,24 @@ export class CarritoComponent implements OnInit {
     this.initConfig();
   }
 
+  // --- NUEVAS FUNCIONES PARA LOS BOTONES ---
+  aumentar(producto: any) {
+    this.carritoService.aumentarCantidad(producto);
+  }
+
+  disminuir(productoId: number) {
+    this.carritoService.disminuirCantidad(productoId);
+  }
+  // ----------------------------------------
+
+  quitar(id: number) {
+    this.carritoService.quitar(id);
+  }
+
+  vaciar() {
+    this.carritoService.vaciar();
+  }
+
   private initConfig(): void {
     const usuario = this.authService.getUsuario(); 
 
@@ -48,7 +66,6 @@ export class CarritoComponent implements OnInit {
             return Promise.reject('No user');
         }
         
-        // Enviamos los productos al backend para que él calcule el total + IVA
         const body = { productos: this.productosConCantidad() };
         
         return this.http.post('http://localhost:4000/api/orders/create-order', body)
@@ -64,30 +81,24 @@ export class CarritoComponent implements OnInit {
       onApprove: (data: IOnApproveCallbackData, actions: any) => {
         const body = { orderID: data.orderID };
 
-        // 1. CAPTURAR EL PAGO EN PAYPAL
         this.http.post('http://localhost:4000/api/orders/capture-order', body).subscribe({
           next: (details: any) => {
             console.log('Pago PayPal exitoso.');
             
-            // 2. GUARDAR EN BD Y ACTUALIZAR STOCK
-            // Usamos el ID del usuario logueado
             const usuarioLogueado = this.authService.getUsuario();
             if (usuarioLogueado && usuarioLogueado.id) {
                 
                 this.carritoService.guardarPedidoEnBD(usuarioLogueado.id).subscribe({
                     next: (resBD) => {
-                        console.log('Pedido registrado en BD:', resBD);
-                        
+                        console.log('Pedido guardado:', resBD);
                         alert('¡Compra exitosa! Se descargará tu recibo.');
-
-                        // 3. GENERAR XML Y VACIAR
                         this.carritoService.generarReciboXML();
                         this.carritoService.vaciar();
                         this.router.navigate(['/catalogo']);
                     },
                     error: (errBD) => {
                         console.error('Error BD:', errBD);
-                        alert('Pago procesado, pero error al guardar historial. Contacta soporte.');
+                        alert('Pago procesado, pero error al guardar historial.');
                     }
                 });
             }
@@ -101,13 +112,5 @@ export class CarritoComponent implements OnInit {
       onError: (err: any) => console.log('PayPal Error:', err),
       onCancel: (data: any) => console.log('Pago cancelado')
     };
-  }
-
-  quitar(id: number) {
-    this.carritoService.quitar(id);
-  }
-
-  vaciar() {
-    this.carritoService.vaciar();
   }
 }

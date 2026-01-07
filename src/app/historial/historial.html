@@ -10,12 +10,12 @@
 
   <div class="lista-pedidos">
     <div *ngFor="let pedido of pedidos()" class="pedido-card">
-      
+
       <div class="pedido-header">
         <div class="info">
           <span class="fecha"> {{ pedido.fecha | date:'medium' }}</span>
-          <span class="id-pedido">Pedido #{{ pedido.id }}</span>
         </div>
+
         <div class="total-badge">
           {{ pedido.total | currency:'MXN' }}
         </div>
@@ -23,9 +23,16 @@
 
       <div class="pedido-body">
         <h4>Productos:</h4>
+
+
         <ul>
           <li *ngFor="let prod of pedido.productos">
-            <span class="cant">{{ prod.cantidad }}x</span> 
+
+            <div class="producto-item-imagen-contenedor img">
+              <img [src]="'http://localhost:4000/' + prod.imagen" [alt]="prod.nombre">
+            </div>
+
+            <span class="cant">{{ prod.cantidad }}x</span>
             <span class="nombre">{{ prod.nombre }}</span>
             <span class="precio">{{ prod.precio | currency:'MXN' }}</span>
           </li>

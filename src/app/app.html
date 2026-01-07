@@ -10,28 +10,29 @@
       <a routerLink="/catalogo" class="nav-link">Catálogo</a>
 
       <ng-container *ngIf="!authService.isLoggedIn()">
-        <a routerLink="/login" class="nav-link">Iniciar Sesión</a>
-        <a routerLink="/registro" class="nav-link highlight">Registrarse</a>
+        <a routerLink="/login" class="nav-link btn-secondary">Iniciar Sesión</a>
+        <a routerLink="/registro" class="nav-link btn-primary">Registrarse</a>
       </ng-container>
 
       <ng-container *ngIf="authService.isLoggedIn()">
-        <a *ngIf="authService.isAdmin()" routerLink="/admin" class="nav-link admin-btn">⚙️ Admin</a>
-
-        <span class="user-welcome">Hola, {{ authService.getUsuario()?.nombre }}</span>
-        <button (click)="logout()" class="btn-logout">Salir</button>
-
-        <a routerLink="/perfil" class="nav-link" title="Ir a mi perfil">
-          <span class="link-text">Mi Perfil</span>
+        <a *ngIf="authService.isAdmin()" routerLink="/admin" class="nav-link admin-badge">
+          ⚙️ Admin
         </a>
 
-        <li *ngIf="authService.isLoggedIn()">
-          <a routerLink="/historial">Mis Pedidos</a>
-        </li>
-
+        <a routerLink="/historial" class="nav-link">Mis Pedidos</a>
+        
+        <div class="user-menu">
+          <a routerLink="/perfil" class="user-name" title="Ir a mi perfil">
+            Hola, {{ authService.getUsuario()?.nombre }}
+          </a>
+          <button (click)="logout()" class="btn-logout" title="Cerrar sesión">
+            <i class="fa-solid fa-right-from-bracket"></i> Salir
+          </button>
+        </div>
       </ng-container>
 
       <a routerLink="/carrito" class="nav-carrito">
-        <span>🛒</span>
+        <span class="icon">🛒</span>
         <span class="carrito-contador" *ngIf="cantidadEnCarrito() > 0">
           {{ cantidadEnCarrito() }}
         </span>

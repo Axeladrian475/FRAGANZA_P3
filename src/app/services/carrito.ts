@@ -10,8 +10,6 @@ interface ProductoConCantidad {
 @Injectable({ providedIn: 'root' })
 export class CarritoService {
   private http = inject(HttpClient);
-  
-  // CORREGIDO: Usamos la misma ruta base que usas para PayPal en el backend
   private apiUrl = 'http://localhost:4000/api/orders'; 
 
   private productosSignal = signal<Product[]>([]);
@@ -19,6 +17,7 @@ export class CarritoService {
   
   private readonly IVA_RATE = 0.16;
 
+  // --- CÁLCULOS ---
   subtotal(): number {
     return this.productosSignal().reduce((acc, p) => acc + Number(p.precio), 0);
   }
@@ -31,16 +30,38 @@ export class CarritoService {
     return this.subtotal() + this.iva();
   }
 
+  // --- GESTIÓN DEL CARRITO ---
+
+  // Agregar un producto (Valida stock)
   agregar(producto: Product) {
     const cantidadEnCarrito = this.productos().filter(p => p.id === producto.id).length;
     if (cantidadEnCarrito >= producto.stock) {
-      alert(`No puedes agregar más unidades de "${producto.nombre}". Stock máximo alcanzado.`);
+      alert(`No hay suficiente stock de "${producto.nombre}". Solo quedan ${producto.stock} unidades.`);
       return;
     }
     const productoCorregido = { ...producto, precio: Number(producto.precio) };
     this.productosSignal.update(lista => [...lista, productoCorregido]);
   }
 
+  // Aumentar cantidad (+)
+  aumentarCantidad(producto: Product) {
+    this.agregar(producto);
+  }
+
+  // Disminuir cantidad (-)
+  disminuirCantidad(idProducto: number) {
+    this.productosSignal.update(lista => {
+      const index = lista.findIndex(p => p.id === idProducto);
+      if (index !== -1) {
+        const nuevaLista = [...lista];
+        nuevaLista.splice(index, 1);
+        return nuevaLista;
+      }
+      return lista;
+    });
+  }
+
+  // Eliminar todos los items de un producto (Basura)
   quitar(id: number) {
     this.productosSignal.update(lista => lista.filter(p => p.id !== id));
   }
@@ -58,12 +79,11 @@ export class CarritoService {
         mapa.set(prod.id, { producto: prod, cantidad: 1 });
       }
     });
-    return Array.from(mapa.values());
+    return Array.from(mapa.values()).sort((a, b) => a.producto.nombre.localeCompare(b.producto.nombre));
   }
 
-  // --- LÓGICA DE GUARDADO ---
-  
-  // Preparamos los datos limpios para la BD
+  // --- COMUNICACIÓN CON BACKEND ---
+
   private agruparParaBackend(lista: Product[]) {
     const mapa = new Map();
     lista.forEach(p => {
@@ -81,15 +101,17 @@ export class CarritoService {
 
   guardarPedidoEnBD(usuarioId: number) {
     const productosAgrupados = this.agruparParaBackend(this.productosSignal());
-    
     const datosPedido = {
       usuario_id: usuarioId,
-      total: this.total(), // Enviamos el total CON IVA
+      total: this.total(), 
       productos: productosAgrupados
     };
-
-    // Esto hará POST a http://localhost:4000/api/orders/
     return this.http.post(this.apiUrl, datosPedido);
+  }
+
+  // --- RESTAURADO: OBTENER HISTORIAL ---
+  obtenerHistorial(usuarioId: number) {
+    return this.http.get<any[]>(`${this.apiUrl}/usuario/${usuarioId}`);
   }
 
   // --- XML ---
@@ -113,24 +135,16 @@ export class CarritoService {
     const iva = this.iva();
     const total = this.total();
     const fecha = new Date().toLocaleDateString();
-    
+
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<recibo>\n`;
     xml += `  <fecha>${fecha}</fecha>\n  <tienda>Fraganza</tienda>\n  <productos>\n`;
-
+    
     for (const item of productos) {
-      xml += `    <producto>\n`;
-      xml += `      <nombre>${this.escapeXML(item.producto.nombre)}</nombre>\n`;
-      xml += `      <cantidad>${item.cantidad}</cantidad>\n`;
-      xml += `      <precio_unitario>${item.producto.precio}</precio_unitario>\n`;
-      xml += `      <subtotal>${(item.producto.precio * item.cantidad).toFixed(2)}</subtotal>\n`;
-      xml += `    </producto>\n`;
+      xml += `    <producto>\n      <nombre>${this.escapeXML(item.producto.nombre)}</nombre>\n`;
+      xml += `      <cantidad>${item.cantidad}</cantidad>\n      <precio>${item.producto.precio}</precio>\n    </producto>\n`;
     }
     
-    xml += `  </productos>\n  <resumen>\n`;
-    xml += `    <subtotal>${subtotal.toFixed(2)}</subtotal>\n`;
-    xml += `    <iva>${iva.toFixed(2)}</iva>\n`;
-    xml += `    <total>${total.toFixed(2)}</total>\n`;
-    xml += `  </resumen>\n</recibo>`;
+    xml += `  </productos>\n  <resumen>\n    <subtotal>${subtotal.toFixed(2)}</subtotal>\n    <iva>${iva.toFixed(2)}</iva>\n    <total>${total.toFixed(2)}</total>\n  </resumen>\n</recibo>`;
 
     const blob = new Blob([xml], { type: 'application/xml' });
     const url = URL.createObjectURL(blob);
@@ -140,14 +154,4 @@ export class CarritoService {
     a.click();
     URL.revokeObjectURL(url);
   }
-
-  
-// ... código anterior ...
-
-  // NUEVO: Obtener historial de compras
-  obtenerHistorial(usuarioId: number) {
-    // Llamamos a la ruta que acabamos de crear en el backend
-    return this.http.get<any[]>(`${this.apiUrl}/usuario/${usuarioId}`);
-  }
 }
-

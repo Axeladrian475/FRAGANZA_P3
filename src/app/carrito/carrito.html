@@ -6,64 +6,66 @@
 </div>
 
 <div class="carrito-container">
+  <h2>Tu Carrito de Compras</h2>
 
-  <div class="productos-lista">
-    @if (productosConCantidad().length === 0) {
-      <div class="carrito-vacio">
-        <h3>Tu carrito está vacío</h3>
-        <p>¡Añade algunos perfumes del catálogo para empezar!</p>
-      </div>
-    } @else {
-      @for (item of productosConCantidad(); track item.producto.id) {
-        <div class="producto-item">
-          
-          <div class="producto-item-imagen-contenedor">
-            <img [src]="'http://localhost:4000/' + item.producto.imagen" 
-                 alt="{{ item.producto.nombre }}">
-          </div>
-
-          <div class="producto-item-info">
-            <h4>{{ item.producto.nombre }}</h4>
-            <p class="descripcion">{{ item.producto.descripcion }}</p>
-            <p class="precio-cantidad-info">
-              {{ item.cantidad }} x <span>{{ item.producto.precio | currency }}</span>
-            </p>
-          </div>
-
-          <button (click)="quitar(item.producto.id)" class="btn-quitar" title="Quitar producto">
-            <i class="fa-solid fa-trash-can"></i>
-          </button>
-        </div>
-      }
-    }
+  <div *ngIf="productosConCantidad().length === 0" class="carrito-vacio">
+    <p>Tu carrito está vacío.</p>
+    <a routerLink="/catalogo" class="btn-volver">Ir al Catálogo</a>
   </div>
 
-  @if (productosConCantidad().length > 0) {
-    <div class="carrito-resumen">
-      <h3 class="resumen-titulo">Resumen del Pedido</h3>
+  <div *ngIf="productosConCantidad().length > 0" class="carrito-contenido">
+    <div class="lista-productos">
 
-      <div class="resumen-linea">
-        <span>Subtotal:</span>
-        <span>{{ subtotal() | currency }}</span>
-      </div>
-      
-      <div class="resumen-linea">
-        <span>IVA (16%):</span>
-        <span>{{ iva() | currency }}</span>
-      </div>
-      
-      <div class="resumen-linea resumen-total">
-        <strong>Total:</strong>
-        <strong class="valor">{{ total() | currency }}</strong>
-      </div>
+      <div *ngFor="let item of productosConCantidad()" class="item-carrito">
 
-      <div class="resumen-acciones">
-        <ngx-paypal [config]="payPalConfig"></ngx-paypal>
 
-        <button (click)="vaciar()" class="btn-accion btn-vaciar">
-          <i class="fa-solid fa-eraser"></i> Vaciar Carrito
+        <div class="producto-item-imagen-contenedor img ">
+          <img [src]="'http://localhost:4000/' + item.producto.imagen" alt="{{ item.producto.nombre }}"
+            class="img-producto" onerror="this.src='assets/no-image.png'">
+        </div>
+
+        <div class="info-producto">
+          <h3>{{ item.producto.nombre }}</h3>
+          <p class="precio-unitario">Precio: {{ item.producto.precio | currency:'MXN' }}</p>
+        </div>
+
+        <div class="controles-cantidad">
+          <button (click)="disminuir(item.producto.id)" class="btn-cantidad">-</button>
+          <span class="cantidad">{{ item.cantidad }}</span>
+          <button (click)="aumentar(item.producto)" class="btn-cantidad">+</button>
+        </div>
+
+        <div class="subtotal-item">
+          {{ (item.producto.precio * item.cantidad) | currency:'MXN' }}
+        </div>
+
+        <button (click)="quitar(item.producto.id)" class="btn-eliminar" title="Eliminar producto">
+          🗑️
         </button>
       </div>
+
     </div>
-  }
+
+    <div class="resumen-pago">
+      <h3>Resumen</h3>
+      <div class="fila">
+        <span>Subtotal:</span>
+        <span>{{ subtotal() | currency:'MXN' }}</span>
+      </div>
+      <div class="fila">
+        <span>IVA (16%):</span>
+        <span>{{ iva() | currency:'MXN' }}</span>
+      </div>
+      <div class="fila total">
+        <span>Total:</span>
+        <span>{{ total() | currency:'MXN' }}</span>
+      </div>
+
+      <div class="acciones">
+        <button (click)="vaciar()" class="btn-vaciar">Vaciar Carrito</button>
+
+        <ngx-paypal [config]="payPalConfig"></ngx-paypal>
+      </div>
+    </div>
+  </div>
 </div>
