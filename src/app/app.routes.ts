@@ -10,6 +10,8 @@ import { AdminComponent } from './admin/admin'; // Importar
 import { adminGuard } from './guards/auth.guard'; // Importar guard
 import { PerfilComponent } from './perfil/perfil';
 import { HistorialComponent } from './historial/historial'; // Importar
+import { TerminosComponent } from './legal/terminos/terminos';
+import { PrivacidadComponent } from './legal/privacidad/privacidad';
 
 export const routes: Routes = [
   { path: 'catalogo', component: CatalogoComponent },
@@ -30,30 +32,32 @@ export const routes: Routes = [
   // Ruta dinámica que recibe el token (ej. /restablecer/abc123xyz)
   { path: 'restablecer/:token', component: RestablecerComponent },
 
-  
+
   {
     path: 'admin',
     component: AdminComponent,
     canActivate: [adminGuard] // <--- SOLO ADMINS PUEDEN ENTRAR
   },
 
-  { 
-    path: 'perfil', 
-    component: PerfilComponent, 
+  {
+    path: 'perfil',
+    component: PerfilComponent,
     canActivate: [authGuard] // Protegido: Solo usuarios logueados
   },
 
 
   { path: 'catalogo', loadComponent: () => import('./catalogo/catalogo').then(m => m.CatalogoComponent) },
-    // ...
-    
-    // AGREGAR ESTA:
-    { 
-        path: 'historial', 
-        component: HistorialComponent,
-        canActivate: [authGuard] // Protegemos para que solo usuarios logueados entren
-    },
-      { path: '**', redirectTo: 'catalogo' }
+  // ...
+
+  // AGREGAR ESTA:
+  {
+    path: 'historial',
+    component: HistorialComponent,
+    canActivate: [authGuard] // Protegemos para que solo usuarios logueados entren
+  },
+  { path: 'terminos-y-condiciones', component: TerminosComponent },
+  { path: 'aviso-de-privacidad', component: PrivacidadComponent },
+  { path: '**', redirectTo: 'catalogo' }
 
 
 ];

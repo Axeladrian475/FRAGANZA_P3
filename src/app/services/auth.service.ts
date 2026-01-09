@@ -1,6 +1,6 @@
 // src/app/services/auth.service.ts
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 
@@ -11,15 +11,17 @@ export class AuthService {
     private http = inject(HttpClient);
     private router = inject(Router);
 
-    // URL de tu backend
+    // URL de tu backend (asegúrate de que coincida con tu puerto)
     private apiUrl = 'http://localhost:4000/api/auth';
 
     // Claves para guardar en el navegador
     private tokenKey = 'auth_token';
-    private userKey = 'auth_user';
+    private userKey = 'usuario_fraganza'; // Unificamos la clave
 
-    // Signal para saber reactivamente si está logueado (útil para el menú)
+    // Signal para saber reactivamente si está logueado
     isLoggedIn = signal<boolean>(this.hasToken());
+
+    constructor() { }
 
     // --- REGISTRO ---
     registrar(datos: any): Observable<any> {
@@ -31,18 +33,52 @@ export class AuthService {
         return this.http.post<any>(`${this.apiUrl}/login`, credenciales).pipe(
             tap(response => {
                 if (response.token) {
-                    // Guardamos el token y el usuario en localStorage
-                    localStorage.setItem(this.tokenKey, response.token);
-                    localStorage.setItem(this.userKey, JSON.stringify(response.usuario));
-
-                    // Actualizamos la señal
-                    this.isLoggedIn.set(true);
+                    this.guardarSesion(response.token, response.usuario);
                 }
             })
         );
     }
 
-    // --- LOGOUT ---
+    // --- ACTUALIZAR PERFIL (Con Token) ---
+    actualizarPerfil(datos: any): Observable<any> {
+        const token = this.getToken();
+        // Creamos headers con el token Authorization
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+        return this.http.put(`${this.apiUrl}/perfil`, datos, { headers }).pipe(
+            tap((res: any) => {
+                if (res.usuario) {
+                    // Actualizamos el usuario en localStorage automáticamente
+                    this.actualizarUsuarioLocal(res.usuario);
+                }
+            })
+        );
+    }
+
+    // --- RECUPERACIÓN DE CONTRASEÑA ---
+    solicitarRecuperacion(email: string): Observable<any> {
+        return this.http.post(`${this.apiUrl}/recuperar`, { email });
+    }
+
+    restablecerPassword(token: string, nuevoPassword: string): Observable<any> {
+        return this.http.post(`${this.apiUrl}/restablecer`, { token, nuevoPassword });
+    }
+
+    // --- MANEJO DE SESIÓN Y TOKENS ---
+
+    private guardarSesion(token: string, usuario: any) {
+        localStorage.setItem(this.tokenKey, token);
+        localStorage.setItem(this.userKey, JSON.stringify(usuario));
+        this.isLoggedIn.set(true);
+    }
+
+    private actualizarUsuarioLocal(usuarioNuevo: any) {
+        // Obtenemos los datos viejos para no perder info (como el rol)
+        const usuarioActual = this.getUsuario();
+        const usuarioActualizado = { ...usuarioActual, ...usuarioNuevo };
+        localStorage.setItem(this.userKey, JSON.stringify(usuarioActualizado));
+    }
+
     logout() {
         localStorage.removeItem(this.tokenKey);
         localStorage.removeItem(this.userKey);
@@ -50,62 +86,21 @@ export class AuthService {
         this.router.navigate(['/login']);
     }
 
-    // --- UTILIDADES ---
-
-    // Verifica si existe un token guardado
-    private hasToken(): boolean {
-        return !!localStorage.getItem(this.tokenKey);
-    }
-
-    // Obtiene el token actual (para enviarlo en peticiones futuras)
     getToken(): string | null {
         return localStorage.getItem(this.tokenKey);
     }
 
-    // Obtiene los datos del usuario (nombre, email, rol)
-    getUsuario(): any {
+    getUsuario() {
         const userStr = localStorage.getItem(this.userKey);
         return userStr ? JSON.parse(userStr) : null;
     }
 
-    // Verifica si es administrador
+    hasToken(): boolean {
+        return !!localStorage.getItem(this.tokenKey);
+    }
+
     isAdmin(): boolean {
-        const usuario = this.getUsuario();
-        return usuario && usuario.rol === 'admin';
+        const user = this.getUsuario();
+        return user && user.rol === 'admin';
     }
-
-    // 1. Enviar correo de recuperación
-    solicitarRecuperacion(email: string): Observable<any> {
-        return this.http.post(`${this.apiUrl}/recuperar`, { email });
-    }
-
-    // 2. Enviar nueva contraseña con el token
-    restablecerPassword(token: string, nuevoPassword: string): Observable<any> {
-        return this.http.post(`${this.apiUrl}/restablecer`, { token, nuevoPassword });
-    }
-
-    
-
-    // NUEVO: Actualizar datos en el backend
-    actualizarPerfil(datos: { nombre: string, email: string }): Observable<any> {
-        // Obtenemos el token actual para enviarlo en los headers (Angular lo suele hacer con interceptor, 
-        // pero si no tienes uno, lo agregamos manual o asumimos que tienes un interceptor)
-        const token = this.getToken();
-        const headers = { 'Authorization': `Bearer ${token}` };
-        
-        return this.http.put(`${this.apiUrl}/perfil`, datos, { headers }).pipe(
-            tap((response: any) => {
-                if (response.usuario) {
-                    this.actualizarUsuarioLocal(response.usuario);
-                }
-            })
-        );
-    }
-
-    // NUEVO: Actualizar localStorage y Signal
-    private actualizarUsuarioLocal(usuario: any) {
-        localStorage.setItem(this.userKey, JSON.stringify(usuario));
-        // Opcional: Si tuvieras un signal con los datos del usuario, lo actualizas aquí.
-    }
-
 }

@@ -44,3 +44,34 @@
 <main class="main-content">
   <router-outlet></router-outlet>
 </main>
+
+<footer class="main-footer">
+  <div class="footer-content">
+    
+    <div class="footer-section">
+      <h3>La Fragranza</h3>
+      <p>Perfumes 100% originales hasta la puerta de tu casa.</p>
+    </div>
+
+    <div class="footer-section links">
+      <h3>Enlaces Rápidos</h3>
+      <ul>
+        <li><a routerLink="/catalogo">Catálogo</a></li>
+        <li><a routerLink="/perfil" *ngIf="authService.isLoggedIn()">Mi Cuenta</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section legal">
+      <h3>Legal</h3>
+      <ul>
+        <li><a routerLink="/terminos-y-condiciones">Términos y Condiciones</a></li>
+        <li><a routerLink="/aviso-de-privacidad">Aviso de Privacidad</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    &copy; 2025 La Fragranza S.A. de C.V. | Creado por AxF Solutions
+  </div>
+</footer>

@@ -1,22 +1,23 @@
+// api/routes/authRoutes.js
 import express from 'express';
-// AQUÍ ESTABA EL ERROR: Faltaba agregar solicitarRecuperacion y restablecerPassword
 import { 
   registrarUsuario, 
   loginUsuario, 
   solicitarRecuperacion, 
   restablecerPassword,
-  actualizarPerfil // <--- IMPORTAR ESTO
+  actualizarPerfil 
 } from '../controllers/authController.js';
 import { verifyToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
+// Rutas públicas
 router.post('/register', registrarUsuario);
 router.post('/login', loginUsuario);
-
-// Rutas de Recuperación
 router.post('/recuperar', solicitarRecuperacion);
 router.post('/restablecer', restablecerPassword);
 
+// Ruta protegida (Requiere Token)
 router.put('/perfil', verifyToken, actualizarPerfil);
+
 export default router;
